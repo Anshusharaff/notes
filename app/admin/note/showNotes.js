@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Share, Star, Trash, Link } from "lucide-react";
-import { handleDeleteNote, handleFav, handleGenShareIDFunc } from "./handleNotes";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AddNote } from "./addNote";
@@ -17,36 +16,61 @@ import { ToastAction } from "@/components/ui/toast";
 const ShowNotes = ({ notes, onRefresh }) => {
     const router = useRouter();
     const handleDelete = async (id, initial) => {
-        handleDeleteNote(id, initial);
-        if (initial == false) {
-            toast({ title: "Note trashed." });
-        } else {
-            toast({ title: "Note restored." });
+        try {
+            await fetch('/api/notes/trash', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, trash: !initial })
+            });
+            if (initial == false) {
+                toast({ title: "Note trashed." });
+            } else {
+                toast({ title: "Note restored." });
+            }
+        } catch (error) {
+            toast({ title: "Error updating note." });
         }
         if (onRefresh) await onRefresh();
         router.refresh();
     }
     const handleFavv = async (id, initial) => {
-        handleFav(id, initial);
-        if (initial == false) {
-            toast({ title: "Note added to favourite." });
-        } else {
-            toast({ title: "Note removed from favourite." });
+        try {
+            await fetch('/api/notes/favorite', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, favorite: !initial })
+            });
+            if (initial == false) {
+                toast({ title: "Note added to favourite." });
+            } else {
+                toast({ title: "Note removed from favourite." });
+            }
+        } catch (error) {
+            toast({ title: "Error updating note." });
         }
         if (onRefresh) await onRefresh();
         router.refresh();
     }
     const handleGenShareID = async (id) => {
-        const res = await handleGenShareIDFunc(id);
-        if (res != null) {
-            toast({
-                title: "Share ID Generated",
-                description: res,
-                action: (
-                    <ToastAction altText="Copy Share ID" onClick={() => navigator.clipboard.writeText(`https://bornebyte.vercel.app/shared/${res}`)}>Copy</ToastAction>
-                ),
+        try {
+            const response = await fetch('/api/notes/share', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id })
             });
-        } else {
+            const data = await response.json();
+            if (data.success && data.shareid) {
+                toast({
+                    title: "Share ID Generated",
+                    description: data.shareid,
+                    action: (
+                        <ToastAction altText="Copy Share ID" onClick={() => navigator.clipboard.writeText(`https://bornebyte.vercel.app/shared/${data.shareid}`)}>Copy</ToastAction>
+                    ),
+                });
+            } else {
+                toast({ title: "Error generating share ID." });
+            }
+        } catch (error) {
             toast({ title: "Error generating share ID." });
         }
         if (onRefresh) await onRefresh();

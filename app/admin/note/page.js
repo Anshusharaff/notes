@@ -1,5 +1,7 @@
-import { getNotes, getFavNotes, getTrashedNotes } from "./handleNotes";
 import NotesClient from "./NotesClient";
+import { getNotes, getFavNotes, getTrashedNotes } from "@/lib/api/notes";
+
+export const dynamic = 'force-dynamic';
 
 const Note = async () => {
   const [notes, favNotes, trashedNotes] = await Promise.all([
@@ -7,6 +9,7 @@ const Note = async () => {
     getFavNotes(),
     getTrashedNotes()
   ]);
+
   return <NotesClient initialNotes={notes} initialFavNotes={favNotes} initialTrashedNotes={trashedNotes} />
 }
 

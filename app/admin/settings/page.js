@@ -2,18 +2,26 @@
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useRef } from "react";
-import { handleChangePassword } from "./handleDB";
 import { toast } from "@/hooks/use-toast";
 import { KeyRound } from "lucide-react";
 
 const SettingsComponent = () => {
   const newPassword = useRef('');
   const handleChangePass = async () => {
-    const res = await handleChangePassword(newPassword.current.value);
-    newPassword.current.value = '';  // Clear the input field after successful password change.
-    if (res == 1) {
-      toast({ title: "Passwords changed successfully" })
-    } else {
+    try {
+      const response = await fetch('/api/settings/password', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newPassword: newPassword.current.value })
+      });
+      const data = await response.json();
+      newPassword.current.value = '';  // Clear the input field after successful password change.
+      if (data.success && data.id === 1) {
+        toast({ title: "Passwords changed successfully" })
+      } else {
+        toast({ title: "Failed to change passwords", description: "An error occurred while trying to change the passwords. Please try again later." })
+      }
+    } catch (error) {
       toast({ title: "Failed to change passwords", description: "An error occurred while trying to change the passwords. Please try again later." })
     }
   }

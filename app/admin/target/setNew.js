@@ -21,7 +21,6 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { addTargetDays } from "./action"
 import { Input } from "@/components/ui/input"
 import { useRouter } from "next/navigation"
 
@@ -45,13 +44,29 @@ export default function SetNewLeftDays() {
     })
 
     async function onSubmit(data) {
-        const res = await addTargetDays(data.targetdate, data.message)
-        if (res != null) {
-            toast({
-                title: "Target date added",
-                description: "Your target date has been added successfully.",
+        try {
+            const response = await fetch('/api/targets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    date: data.targetdate.toLocaleDateString(),
+                    message: data.message
+                })
             });
-        } else {
+            const result = await response.json();
+            if (result.success && result.id) {
+                toast({
+                    title: "Target date added",
+                    description: "Your target date has been added successfully.",
+                });
+            } else {
+                toast({
+                    title: "Failed to add target date",
+                    description: "An error occurred while adding your target date. Please try again later.",
+                    status: "error",
+                });
+            }
+        } catch (error) {
             toast({
                 title: "Failed to add target date",
                 description: "An error occurred while adding your target date. Please try again later.",

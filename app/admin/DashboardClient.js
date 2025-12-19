@@ -16,9 +16,7 @@ import {
     Target,
     Clock
 } from "lucide-react";
-import { getDashboardStats, getActivityTimeline, getProductivityStats } from "./dashboard-actions";
 import { ChartComponent } from "./Chart";
-import { handleNotesChartData } from "./note/handleNotes";
 import { Progress } from "@/components/ui/progress";
 import Link from 'next/link';
 import { setCache, getCache } from "@/lib/cache";
@@ -43,11 +41,18 @@ export default function DashboardClient({ initialStats, initialChart, initialAct
         setLoading(true);
         setError(null);
         try {
+            const [statsRes, chartRes, activityRes, productivityRes] = await Promise.all([
+                fetch('/api/dashboard/stats', { cache: 'no-store' }),
+                fetch('/api/notes/chart', { cache: 'no-store' }),
+                fetch('/api/dashboard/activity', { cache: 'no-store' }),
+                fetch('/api/dashboard/productivity', { cache: 'no-store' })
+            ]);
+
             const [newStats, newChart, newActivity, newProductivity] = await Promise.all([
-                getDashboardStats(),
-                handleNotesChartData(),
-                getActivityTimeline(),
-                getProductivityStats()
+                statsRes.json(),
+                chartRes.json(),
+                activityRes.json(),
+                productivityRes.json()
             ]);
 
             // Update state

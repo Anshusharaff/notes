@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import ShowInbox from "./ShowInbox";
 import { RefreshButton } from "@/components/RefreshButton";
 import { PageTransition, SlideIn } from "@/components/PageTransition";
-import { getNotifications } from "./action";
 import { setCache, getCache } from "@/lib/cache";
 
 export default function InboxClient({ initialResult, initialFilter }) {
@@ -19,7 +18,8 @@ export default function InboxClient({ initialResult, initialFilter }) {
 
     const handleRefresh = async () => {
         try {
-            const freshData = await getNotifications("*");
+            const response = await fetch('/api/notifications?filter=*', { cache: 'no-store' });
+            const freshData = await response.json();
             setResult(freshData[0]);
             setFilter(freshData[1]);
 

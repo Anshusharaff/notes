@@ -7,19 +7,19 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { useState } from "react";
-import { getNotifications } from "./action";
 import ShowInboxMessages from "./ShowData";
 
 const ShowInbox = ({ result, filter }) => {
     const [data, setdata] = useState(result);
 
     const handleFilter = async (e) => {
-        if (e === "*") {
-            const result = await getNotifications("*");
+        try {
+            const response = await fetch(`/api/notifications?filter=${encodeURIComponent(e)}`, { cache: 'no-store' });
+            const result = await response.json();
             setdata(result[0]);
+        } catch (error) {
+            console.error('Error filtering notifications:', error);
         }
-        const result = await getNotifications(e);
-        setdata(result[0]);
     }
     return (
         <div>

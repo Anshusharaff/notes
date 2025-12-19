@@ -5,7 +5,6 @@ import SetNewLeftDays from './setNew';
 import ShowTargetDates from './ShowTargetDates';
 import { RefreshButton } from "@/components/RefreshButton";
 import { PageTransition, SlideIn } from "@/components/PageTransition";
-import { getTargetDays } from './action';
 import { setCache, getCache } from "@/lib/cache";
 
 export default function TargetClient({ initialTargets }) {
@@ -18,7 +17,8 @@ export default function TargetClient({ initialTargets }) {
 
     const handleRefresh = async () => {
         try {
-            const freshTargets = await getTargetDays();
+            const response = await fetch('/api/targets', { cache: 'no-store' });
+            const freshTargets = await response.json();
             setTargets(freshTargets);
 
             // Update cache

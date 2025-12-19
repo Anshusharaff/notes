@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { cookies } from "next/headers"
-import { logout } from "@/app/auth/actions";
+import { LogoutButton } from "@/components/LogoutButton";
 
 export default async function Navbar() {
     const cookieStore = await cookies();
@@ -22,7 +22,7 @@ export default async function Navbar() {
                     Admin
                 </Link>
                 {
-                    isLoggedIn && <Button onClick={logout}>Logout</Button>
+                    isLoggedIn && <LogoutButton />
                 }
             </nav>
         </header>

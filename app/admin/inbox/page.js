@@ -1,5 +1,7 @@
-import { getNotifications } from "./action";
 import InboxClient from "./InboxClient";
+import { getNotifications } from "@/lib/api/notifications";
+
+export const dynamic = 'force-dynamic';
 
 const Inbox = async () => {
   const result = await getNotifications("*");

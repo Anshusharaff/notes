@@ -8,7 +8,6 @@ import SearchComponent from "./InputPage";
 import Download from "./Download";
 import { RefreshButton } from "@/components/RefreshButton";
 import { PageTransition, SlideIn } from "@/components/PageTransition";
-import { getNotes, getFavNotes, getTrashedNotes } from "./handleNotes";
 import { setCache, getCache } from "@/lib/cache";
 
 export default function NotesClient({ initialNotes, initialFavNotes, initialTrashedNotes }) {
@@ -27,10 +26,16 @@ export default function NotesClient({ initialNotes, initialFavNotes, initialTras
     const handleRefresh = async () => {
         setIsRefreshing(true);
         try {
+            const [notesRes, favNotesRes, trashedNotesRes] = await Promise.all([
+                fetch('/api/notes', { cache: 'no-store' }),
+                fetch('/api/notes?type=favorites', { cache: 'no-store' }),
+                fetch('/api/notes?type=trashed', { cache: 'no-store' })
+            ]);
+
             const [freshNotes, freshFavNotes, freshTrashedNotes] = await Promise.all([
-                getNotes(),
-                getFavNotes(),
-                getTrashedNotes()
+                notesRes.json(),
+                favNotesRes.json(),
+                trashedNotesRes.json()
             ]);
 
             // Update state

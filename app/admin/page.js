@@ -1,6 +1,8 @@
 import DashboardClient from "./DashboardClient";
-import { getDashboardStats, getActivityTimeline, getProductivityStats } from "./dashboard-actions";
-import { handleNotesChartData } from "./note/handleNotes";
+import { getDashboardStats, getActivityTimeline, getProductivityStats } from "@/lib/api/dashboard";
+import { getNotesChartData } from "@/lib/api/notes";
+
+export const dynamic = 'force-dynamic';
 
 const AdminMainPageComponent = async () => {
   let stats, chartData, activity, productivity, error = null;
@@ -9,7 +11,7 @@ const AdminMainPageComponent = async () => {
     // Fetch all dashboard data in parallel
     [stats, chartData, activity, productivity] = await Promise.all([
       getDashboardStats(),
-      handleNotesChartData(),
+      getNotesChartData(),
       getActivityTimeline(),
       getProductivityStats()
     ]);

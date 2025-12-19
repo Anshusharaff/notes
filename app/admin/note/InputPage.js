@@ -1,7 +1,6 @@
 "use client"
 import { Input } from "@/components/ui/input"
 import { useRef, useState, useEffect } from "react";
-import { getSearchNotes } from "./handleNotes";
 import ShowNotes from "./showNotes";
 
 const SearchComponent = ({ notes, onRefresh }) => {
@@ -18,8 +17,13 @@ const SearchComponent = ({ notes, onRefresh }) => {
             setSearchResults(notes);
             return;
         }
-        const res = await getSearchNotes(query);
-        setSearchResults(res);
+        try {
+            const response = await fetch(`/api/notes?query=${encodeURIComponent(query)}`, { cache: 'no-store' });
+            const res = await response.json();
+            setSearchResults(res);
+        } catch (error) {
+            console.error('Error searching notes:', error);
+        }
     }
     return (
         <div>

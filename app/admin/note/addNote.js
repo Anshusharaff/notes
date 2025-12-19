@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { useRef } from "react"
-import { handleSaveNewNote, handleUpdateNote } from "./handleNotes"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
@@ -156,23 +155,39 @@ export function AddNote({ icon, noteid, title, body, onRefresh }) {
     };
 
     const handleSave = async () => {
-        await handleSaveNewNote(titleRef.current.value, bodyRef.current.value)
-        toast({
-            title: "Note saved successfully!"
-        })
+        try {
+            const response = await fetch('/api/notes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: titleRef.current.value, body: bodyRef.current.value })
+            });
+            const data = await response.json();
+            if (data.success) {
+                toast({ title: "Note saved successfully!" });
+            } else {
+                toast({ title: "Failed to save note!" });
+            }
+        } catch (error) {
+            toast({ title: "Failed to save note!" });
+        }
         if (onRefresh) await onRefresh();
         router.refresh();
     }
     const handleUpdatee = async () => {
-        let resid = await handleUpdateNote(noteid, titleRef.current.value, bodyRef.current.value)
-        if (resid === true) {
-            toast({
-                title: "Note updated successfully!"
-            })
-        } else {
-            toast({
-                title: "Failed to update note!"
-            })
+        try {
+            const response = await fetch('/api/notes', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: noteid, title: titleRef.current.value, body: bodyRef.current.value })
+            });
+            const data = await response.json();
+            if (data.success) {
+                toast({ title: "Note updated successfully!" });
+            } else {
+                toast({ title: "Failed to update note!" });
+            }
+        } catch (error) {
+            toast({ title: "Failed to update note!" });
         }
         if (onRefresh) await onRefresh();
         router.refresh();
