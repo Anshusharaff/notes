@@ -55,3 +55,23 @@ export async function POST(request) {
         return NextResponse.json({ success: false, id: null }, { status: 500 });
     }
 }
+
+export async function DELETE(request) {
+    const auth = await requireAuth(request);
+    if (auth.error) {
+        return NextResponse.json({ message: auth.message }, { status: auth.status });
+    }
+
+    try {
+        const { id } = await request.json();
+        await sql.query(`DELETE FROM targetdate WHERE id = ${id}`);
+
+        const date = new Date().toLocaleString("en-US", { timeZone: "Asia/Kathmandu" });
+        await sql.query(`INSERT INTO notifications (title, created_at, category, label) VALUES ('Target deleted', '${date}','targetdeleted','Target Deleted')`);
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("Error deleting target:", error);
+        return NextResponse.json({ success: false }, { status: 500 });
+    }
+}

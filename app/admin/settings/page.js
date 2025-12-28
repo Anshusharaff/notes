@@ -28,7 +28,7 @@ const SettingsComponent = () => {
   }
   return (
     <div className="h-full w-full flex flex-col items-center justify-center p-4 gap-6">
-      <div className="bg-card border rounded-xl p-8 shadow-lg max-w-md w-full">
+      <div className="bg-card border rounded-xl p-8 shadow-lg max-w-2xl w-full">
         <div className="flex items-center justify-center gap-3 mb-6">
           <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
             <KeyRound className="h-6 w-6" />

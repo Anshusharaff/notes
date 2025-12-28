@@ -20,12 +20,13 @@ export async function GET(request) {
             const dateStr = date.toLocaleDateString("en-US", { timeZone: "Asia/Kathmandu" });
 
             const count = notes.filter(note => {
-                const noteDate = new Date(note.created_at).toLocaleDateString("en-US", { timeZone: "Asia/Kathmandu" });
+                // Parse the created_at string which is already in Asia/Kathmandu timezone
+                const noteDate = note.created_at.split(',')[0]; // Get just the date part (MM/DD/YYYY)
                 return noteDate === dateStr;
             }).length;
 
             last7Days.push({
-                date: date.toLocaleDateString("en-US", { month: 'short', day: 'numeric' }),
+                date: date.toLocaleDateString("en-US", { month: 'short', day: 'numeric', timeZone: "Asia/Kathmandu" }),
                 count
             });
         }

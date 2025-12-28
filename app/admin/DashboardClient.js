@@ -21,10 +21,9 @@ import { Progress } from "@/components/ui/progress";
 import Link from 'next/link';
 import { setCache, getCache } from "@/lib/cache";
 
-export default function DashboardClient({ initialStats, initialChart, initialActivity, initialProductivity, error: initialError }) {
+export default function DashboardClient({ initialStats, initialChart, initialProductivity, error: initialError }) {
     const [stats, setStats] = useState(initialStats);
     const [chartData, setChartData] = useState(initialChart);
-    const [activity, setActivity] = useState(initialActivity);
     const [productivity, setProductivity] = useState(initialProductivity);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(initialError);
@@ -33,38 +32,33 @@ export default function DashboardClient({ initialStats, initialChart, initialAct
     useEffect(() => {
         if (initialStats) setCache('dashboardStats', initialStats, 15);
         if (initialChart) setCache('dashboardChart', initialChart, 15);
-        if (initialActivity) setCache('dashboardActivity', initialActivity, 15);
         if (initialProductivity) setCache('dashboardProductivity', initialProductivity, 15);
-    }, [initialStats, initialChart, initialActivity, initialProductivity]);
+    }, [initialStats, initialChart, initialProductivity]);
 
     const refreshData = async () => {
         setLoading(true);
         setError(null);
         try {
-            const [statsRes, chartRes, activityRes, productivityRes] = await Promise.all([
+            const [statsRes, chartRes, productivityRes] = await Promise.all([
                 fetch('/api/dashboard/stats', { cache: 'no-store' }),
                 fetch('/api/notes/chart', { cache: 'no-store' }),
-                fetch('/api/dashboard/activity', { cache: 'no-store' }),
                 fetch('/api/dashboard/productivity', { cache: 'no-store' })
             ]);
 
-            const [newStats, newChart, newActivity, newProductivity] = await Promise.all([
+            const [newStats, newChart, newProductivity] = await Promise.all([
                 statsRes.json(),
                 chartRes.json(),
-                activityRes.json(),
                 productivityRes.json()
             ]);
 
             // Update state
             setStats(newStats);
             setChartData(newChart);
-            setActivity(newActivity);
             setProductivity(newProductivity);
 
             // Update cache
             setCache('dashboardStats', newStats, 15);
             setCache('dashboardChart', newChart, 15);
-            setCache('dashboardActivity', newActivity, 15);
             setCache('dashboardProductivity', newProductivity, 15);
         } catch (err) {
             console.error('Error refreshing dashboard:', err);
@@ -204,7 +198,7 @@ export default function DashboardClient({ initialStats, initialChart, initialAct
                 </div>
 
                 {/* Bottom Grid */}
-                <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
                     {/* Recent Notes */}
                     <SlideIn delay={0.7} className="min-w-0">
                         <Card>
@@ -240,37 +234,8 @@ export default function DashboardClient({ initialStats, initialChart, initialAct
                         </Card>
                     </SlideIn>
 
-                    {/* Recent Activity */}
-                    <SlideIn delay={0.8} className="min-w-0">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    <Activity className="h-5 w-5" />
-                                    Recent Activity
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-3">
-                                    {activity.length > 0 ? (
-                                        activity.map((item, index) => (
-                                            <div key={index} className="flex items-start gap-3 text-sm">
-                                                <div className="h-2 w-2 rounded-full bg-primary mt-2 flex-shrink-0" />
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-medium truncate">{item.title}</p>
-                                                    <p className="text-xs text-muted-foreground">{item.timestamp}</p>
-                                                </div>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p className="text-sm text-muted-foreground text-center py-4">No recent activity</p>
-                                    )}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </SlideIn>
-
                     {/* Upcoming Targets */}
-                    <SlideIn delay={0.9} className="min-w-0">
+                    <SlideIn delay={0.8} className="min-w-0">
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
@@ -306,7 +271,7 @@ export default function DashboardClient({ initialStats, initialChart, initialAct
                 </div>
 
                 {/* Quick Actions */}
-                <SlideIn delay={1.0}>
+                <SlideIn delay={0.9}>
                     <Card>
                         <CardHeader>
                             <CardTitle>Quick Actions</CardTitle>

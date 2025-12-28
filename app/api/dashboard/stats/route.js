@@ -58,7 +58,8 @@ export async function GET(request) {
         // Calculate notes created today
         const today = new Date().toLocaleDateString("en-US", { timeZone: "Asia/Kathmandu" });
         const notesToday = notes.filter(note => {
-            const noteDate = new Date(note.created_at).toLocaleDateString("en-US", { timeZone: "Asia/Kathmandu" });
+            // Parse the created_at string which is already in Asia/Kathmandu timezone
+            const noteDate = note.created_at.split(',')[0]; // Get just the date part (MM/DD/YYYY)
             return noteDate === today;
         }).length;
 

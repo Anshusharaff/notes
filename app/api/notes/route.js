@@ -80,7 +80,7 @@ export async function POST(request) {
         const bodyEscaped = body.replaceAll("'", "&apos;");
         const date = new Date().toLocaleString("en-US", { timeZone: "Asia/Kathmandu" });
 
-        const res = await sql.query(`INSERT INTO notes (title, body, category, created_at, lastupdated) VALUES ('${titleEscaped}', '${bodyEscaped}', 'Null', '${date}', 'null') returning id`);
+        const res = await sql.query(`INSERT INTO notes (title, body, category, created_at, lastupdated) VALUES ('${titleEscaped}', '${bodyEscaped}', NULL, '${date}', NULL) returning id`);
         const insertedID = res[0].id;
         await sql.query(`INSERT INTO notifications (title, created_at, category, label) VALUES ('Note Added with id ${insertedID}', '${date}','noteadded','Note added')`);
 

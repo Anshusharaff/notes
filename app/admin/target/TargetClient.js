@@ -42,7 +42,7 @@ export default function TargetClient({ initialTargets }) {
                 </SlideIn>
                 <SlideIn delay={0.1}>
                     <div className='mx-auto py-6 w-full md:w-2/3'>
-                        <ShowTargetDates targetdates={targets} />
+                        <ShowTargetDates targetdates={targets} onRefresh={handleRefresh} />
                     </div>
                 </SlideIn>
             </div>
