@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS password (
 -- Default password: 'admin' (hashed with bcrypt)
 -- IMPORTANT: Change this immediately after deployment!
 INSERT INTO password (id, pass, last_updated)
-VALUES (1, '$2a$10$N9qo8uLOickgx2ZMRZoMye1p7LrcyqkBzaXdV5vG0dNOiUpRlnQZu', CURRENT_TIMESTAMP)
+VALUES (1, 'U2FsdGVkX1+N5gHgpnnHPR1ks+NP9cKIPHJbdEgIFAc=', CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
 -- =============================================================================
