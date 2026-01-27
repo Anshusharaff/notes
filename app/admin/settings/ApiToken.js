@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
-import { Key, Copy, Trash2, Plus } from "lucide-react";
+import { Key, Copy, Trash2, Plus, Eye, EyeOff } from "lucide-react";
 import {
     Dialog,
     DialogClose,
@@ -23,6 +23,7 @@ export default function ApiToken() {
     const [tokenName, setTokenName] = useState("");
     const [loading, setLoading] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
+    const [visibleTokens, setVisibleTokens] = useState({});
 
     const fetchTokens = async () => {
         try {
@@ -123,6 +124,18 @@ export default function ApiToken() {
         });
     };
 
+    const toggleTokenVisibility = (tokenId) => {
+        setVisibleTokens(prev => ({
+            ...prev,
+            [tokenId]: !prev[tokenId]
+        }));
+    };
+
+    const maskToken = (token) => {
+        if (token.length <= 8) return "••••••••";
+        return token.slice(0, 4) + "••••••••••••" + token.slice(-4);
+    };
+
     return (
         <div className="bg-card border rounded-xl p-8 shadow-lg max-w-2xl w-full">
             <div className="flex items-center justify-between mb-6">
@@ -213,25 +226,55 @@ export default function ApiToken() {
                         tokens.map((token) => (
                             <div
                                 key={token.id}
-                                className={`flex items-center justify-between p-4 border rounded-lg ${token.revoked ? "opacity-50 bg-muted" : "bg-background"
-                                    }`}
+                                className={`flex flex-col gap-3 p-4 border rounded-lg ${token.revoked ? "opacity-50 bg-muted" : "bg-background"}`}
                             >
-                                <div className="flex-1">
-                                    <p className="font-medium">{token.name}</p>
-                                    <p className="text-xs text-muted-foreground">
-                                        Created: {token.created_at}
-                                        {token.last_used && ` • Last used: ${token.last_used}`}
-                                        {token.revoked && " • REVOKED"}
-                                    </p>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex-1">
+                                        <p className="font-medium">{token.name}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            Created: {token.created_at}
+                                            {token.last_used && ` • Last used: ${token.last_used}`}
+                                            {token.revoked && " • REVOKED"}
+                                        </p>
+                                    </div>
+                                    {!token.revoked && (
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => deleteToken(token.id)}
+                                        >
+                                            <Trash2 className="h-4 w-4 text-destructive" />
+                                        </Button>
+                                    )}
                                 </div>
                                 {!token.revoked && (
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={() => deleteToken(token.id)}
-                                    >
-                                        <Trash2 className="h-4 w-4 text-destructive" />
-                                    </Button>
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex-1 flex items-center gap-2 bg-muted/50 px-3 py-2 rounded-md">
+                                            <code className="text-xs font-mono flex-1 truncate">
+                                                {visibleTokens[token.id] ? token.token : maskToken(token.token)}
+                                            </code>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-6 w-6"
+                                                onClick={() => toggleTokenVisibility(token.id)}
+                                            >
+                                                {visibleTokens[token.id] ? (
+                                                    <EyeOff className="h-3 w-3" />
+                                                ) : (
+                                                    <Eye className="h-3 w-3" />
+                                                )}
+                                            </Button>
+                                        </div>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            className="h-8 w-8"
+                                            onClick={() => copyToken(token.token)}
+                                        >
+                                            <Copy className="h-3 w-3" />
+                                        </Button>
+                                    </div>
                                 )}
                             </div>
                         ))
