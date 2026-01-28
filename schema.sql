@@ -59,6 +59,23 @@ CREATE INDEX IF NOT EXISTS idx_targetdate_date ON targetdate(date);
 CREATE INDEX IF NOT EXISTS idx_targetdate_shareid ON targetdate(shareid);
 
 -- =============================================================================
+-- TABLE: messages
+-- Stores contact form / inbox messages
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS messages (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    time TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indexes for messages
+CREATE INDEX IF NOT EXISTS idx_messages_time ON messages(time DESC);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
+
+-- =============================================================================
 -- TABLE: password
 -- Stores the admin password (single row table)
 -- =============================================================================

@@ -10,20 +10,37 @@ const SettingsComponent = () => {
   const newPassword = useRef('');
   const handleChangePass = async () => {
     try {
+      const passwordValue = newPassword.current.value;
+
+      if (!passwordValue || passwordValue.length < 4) {
+        toast({
+          title: "Invalid password",
+          description: "Password must be at least 4 characters long"
+        });
+        return;
+      }
+
       const response = await fetch('/api/settings/password', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newPassword: newPassword.current.value })
+        body: JSON.stringify({ newPassword: passwordValue })
       });
       const data = await response.json();
-      newPassword.current.value = '';  // Clear the input field after successful password change.
-      if (data.success && data.id === 1) {
-        toast({ title: "Passwords changed successfully" })
+
+      if (response.ok && data.success) {
+        newPassword.current.value = '';  // Clear the input field after successful password change.
+        toast({ title: "Password changed successfully" })
       } else {
-        toast({ title: "Failed to change passwords", description: "An error occurred while trying to change the passwords. Please try again later." })
+        toast({
+          title: "Failed to change password",
+          description: data.message || "An error occurred while trying to change the password. Please try again later."
+        })
       }
     } catch (error) {
-      toast({ title: "Failed to change passwords", description: "An error occurred while trying to change the passwords. Please try again later." })
+      toast({
+        title: "Failed to change password",
+        description: "An error occurred while trying to change the password. Please try again later."
+      })
     }
   }
   return (

@@ -75,8 +75,21 @@ export async function DELETE(request) {
     }
 
     try {
+        let id;
+
+        // Check query params first (API style)
         const { searchParams } = new URL(request.url);
-        const id = searchParams.get('id');
+        id = searchParams.get('id');
+
+        // If not in query params, check body (web interface style)
+        if (!id) {
+            try {
+                const body = await request.json();
+                id = body.id;
+            } catch (e) {
+                // Ignore JSON parse errors
+            }
+        }
 
         if (!id) {
             return NextResponse.json({

@@ -5,7 +5,14 @@ import { sql } from "@/lib/db";
 export const addTargetDays = async (propsDate, propMessage) => {
     try {
         const today = new Date().toLocaleString("en-US", { timeZone: "Asia/Kathmandu" });
-        const res = await sql.query(`insert into targetdate (date, created_at, message) values ('${propsDate.toLocaleDateString()}', '${today}','${propMessage}') returning id`)
+        const dateStr = propsDate.toLocaleDateString();
+
+        const res = await sql`
+            INSERT INTO targetdate (date, created_at, message) 
+            VALUES (${dateStr}, ${today}, ${propMessage}) 
+            RETURNING id
+        `;
+
         return res[0].id;
     } catch (error) {
         console.error("@app/admin/left/action.js")
@@ -16,8 +23,8 @@ export const addTargetDays = async (propsDate, propMessage) => {
 
 export const getTargetDays = async () => {
     try {
-        const res = await sql.query(`SELECT * FROM targetdate`);
-        
+        const res = await sql`SELECT * FROM targetdate ORDER BY date ASC`;
+
         let data = res.map((row) => {
             const today = new Date();
             const targetDate = new Date(row.date);

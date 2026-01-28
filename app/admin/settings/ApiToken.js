@@ -63,7 +63,7 @@ export default function ApiToken() {
 
             if (data.success) {
                 setNewToken(data.token);
-                setTokenName("");
+                // Don't clear tokenName here - let it clear when dialog closes
                 fetchTokens();
                 toast({
                     title: "API Token Generated",
@@ -145,7 +145,14 @@ export default function ApiToken() {
                     </div>
                     <p className="font-bold text-2xl">API Tokens</p>
                 </div>
-                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <Dialog open={dialogOpen} onOpenChange={(open) => {
+                    setDialogOpen(open);
+                    // Reset form when dialog closes
+                    if (!open) {
+                        setNewToken("");
+                        setTokenName("");
+                    }
+                }}>
                     <DialogTrigger asChild>
                         <Button>
                             <Plus className="h-4 w-4 mr-2" />

@@ -12,10 +12,10 @@ export async function PUT(request) {
     try {
         const { newPassword } = await request.json();
 
-        if (!newPassword || newPassword.length < 6) {
+        if (!newPassword || newPassword.length < 4) {
             return NextResponse.json({
                 success: false,
-                message: 'Password must be at least 6 characters'
+                message: 'Password must be at least 4 characters'
             }, { status: 400 });
         }
 

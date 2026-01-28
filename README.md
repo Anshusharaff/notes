@@ -410,7 +410,7 @@ Change admin password.
 }
 ```
 
-**Note:** Password must be at least 6 characters.
+**Note:** Password must be at least 4 characters.
 
 ---
 
