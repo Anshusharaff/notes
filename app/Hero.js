@@ -6,7 +6,7 @@ const Hero = () => {
         <div className='flex lg:flex-row flex-col items-center justify-evenly gap-10 w-full min-h-screen p-4'>
             <div className='animate-fadeIn space-y-4'>
                 <p className="text-6xl font-bold text-center">
-                    Shubham Shah
+                    Anshu Sharaff
                 </p>
                 <p className="text-lg text-muted-foreground text-center">
                     A personal website.
@@ -14,7 +14,7 @@ const Hero = () => {
             </div>
             <div className='animate-fadeIn group'>
                 <Image
-                    src={"/logo.jpg"}
+                    src={"/ans.jpg"}
                     alt="Logo"
                     priority
                     width={400}
